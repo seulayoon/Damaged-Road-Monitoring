@@ -1,3 +1,14 @@
+# 자율주행차를 이용한 파손 도보 모니터링 시스템 
+by @seulayoon
+
+- 코드 수정 및 추가
+- 데이터 Re-masking하여 사용 (원본 데이터셋: AI hub 제공)
+- classes 축소
+- 아직 정리 중 ...
+___
+
+
+
 # segmentation-selectstar
 
 ![](https://media.giphy.com/media/S7KnEAj0ZYpXeDLLuJ/giphy.gif)
