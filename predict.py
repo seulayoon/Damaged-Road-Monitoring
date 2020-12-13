@@ -1,5 +1,3 @@
-# predict on jpg files or mp4 video
-
 import cv2
 import torch
 from glob import glob
@@ -15,12 +13,12 @@ from PIL import Image
 from tqdm import tqdm
 
 ### RUN OPTIONS ###
-MODEL_PATH = "./run/surface/deeplab/model_iou_77.pth.tar"
+MODEL_PATH = '/home/piai/A2 PROJECT/run/surface/deeplab/model_best.pth.tar'
 ORIGINAL_HEIGHT = 720
 ORIGINAL_WIDTH = 1280
 MODEL_HEIGHT = 512
 MODEL_WIDTH = 1024
-NUM_CLASSES = 7  # including background
+NUM_CLASSES = 8  # including background
 CUDA = True if torch.cuda.is_available() else False
 
 MODE = 'jpg'  # 'mp4' or 'jpg'
@@ -31,19 +29,22 @@ OUTPUT_PATH = './output/jpgs'  # where video file or jpg frames folder should be
 # DATA_PATH = './test/test.mp4'
 # OUTPUT_PATH = './output/test.avi'
 
+# MODE = 'cam'
+
 SHOW_OUTPUT = True if 'DISPLAY' in os.environ else False  # whether to cv2.show()
 
 OVERLAPPING = True  # whether to mix segmentation map and original image
 FPS_OVERRIDE = 60  # None to use original video fps
 
 CUSTOM_COLOR_MAP = [
-    [0, 0, 0],  # background
-    [255, 128, 0],  # bike_lane
-    [255, 0, 0],  # caution_zone
-    [255, 0, 255],  # crosswalk
-    [255, 255, 0],  # guide_block
-    [0, 0, 255],  # roadway
-    [0, 255, 0],  # sidewalk
+    [0,0,0], #background
+    [0,0,255], #bike_lane,
+    [255,192,0], #caution_zone
+    [255,0,255], #crosswalk
+    [255,255,0], #guide_block
+    [255,128,255], #roadway
+    [0,255,0], #sidewalk
+    [255,0,0] #damaged
 ]  # To ignore unused classes while predicting
 
 CUSTOM_N_CLASSES = len(CUSTOM_COLOR_MAP)
@@ -183,18 +184,8 @@ class ModelWrapper:
                              interpolation=cv2.INTER_NEAREST)
         return resized
 
-
-def main():
-    print('Loading model...')
-    model_wrapper = ModelWrapper()
-
-    if MODE == 'mp4':
-        generator = FrameGeneratorMP4(DATA_PATH, OUTPUT_PATH, show=SHOW_OUTPUT)
-    elif MODE == 'jpg':
-        generator = FrameGeneratorJpg(DATA_PATH, OUTPUT_PATH, show=SHOW_OUTPUT)
-    else:
-        raise NotImplementedError('MODE should be "mp4" or "jpg".')
-
+    
+def predict_from_generator(model_wrapper, generator):
     for index, img in enumerate(tqdm(generator)):
         segmap = model_wrapper.predict(img)
         if OVERLAPPING:
@@ -207,7 +198,43 @@ def main():
 
     generator.close()
     print('Done.')
+    
+
+def main():
+    print('Loading model...')
+    model_wrapper = ModelWrapper()
+
+    if MODE == 'mp4':
+        generator = FrameGeneratorMP4(DATA_PATH, OUTPUT_PATH, show=SHOW_OUTPUT)
+        predict_from_generator(model_wrapper, generator)
+    elif MODE == 'jpg':
+        generator = FrameGeneratorJpg(DATA_PATH, OUTPUT_PATH, show=SHOW_OUTPUT)
+        predict_from_generator(model_wrapper, generator)
+
+    elif MODE == 'cam':
+        window_start = (60, 60)     # window start point
+        cv2.namedWindow('segmentation_map', 100)
+        cam = cv2.VideoCapture(0)    #input cam number : 0, 1, 2....
+
+        while True:
+            ret, frame = cam.read()
+            if not ret:
+                continue
+            img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            segmap = model_wrapper.predict(img)
+
+            cv2.imshow('segmentation_map', segmap)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+                
+        cam.release()
+        cv2.destroyAllWindows()
+    else:
+        raise NotImplementedError('MODE should be "mp4" or "jpg".')
 
 
 if __name__ == '__main__':
     main()
+
+
+

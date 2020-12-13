@@ -1,4 +1,5 @@
-# pip install xmltodict
+#pip install xmltodict
+
 import json
 import xmltodict
 from glob import glob
@@ -41,47 +42,61 @@ OUTPUT_DIR
 """
 
 ### RUN OPTIONS ###
-BASE_DIR = Path('/home/super/Projects/dataset/surface_org')
+BASE_DIR = Path('/home/piai/A2 PROJECT/dataset/surface_org')
 XML_GLOB = Path(BASE_DIR) / '**/*.xml'
-OUTPUT_DIR = Path('/home/super/Projects/dataset/surface6')
+OUTPUT_DIR = Path('/home/piai/A2 PROJECT/dataset/surface6')
 JSON_OUTPUT = OUTPUT_DIR / 'annotations'
 IMAGE_OUTPUT = OUTPUT_DIR / 'images'
 MASK_OUTPUT = OUTPUT_DIR / 'masks'
 
-# [0, 0, 0] for ignore mask
+# # [0, 0, 0] for ignore mask
+# color_map = {
+# "sidewalk@blocks": [0,255,0],  # sidewalk
+# "sidewalk@cement": [0,255,0],  # sidewalk
+# "sidewalk@urethane": [0, 0, 255],  # bike_lane
+# "sidewalk@asphalt": [0, 0, 255],  # bike_lane
+# "sidewalk@soil_stone": [0,255,0],  # sidewalk
+# "sidewalk@damaged": [255, 0, 0],  # damaged
+# "sidewalk@other": [0,255,0],  # sidewalk
+# "braille_guide_blocks@normal": [255, 255, 0],  # guide_block
+# "braille_guide_blocks@damaged": [255, 0, 0],  # damaged
+# "roadway@normal": [255,128,255],  # roadway
+# "roadway@crosswalk": [255, 0, 255],  # crosswalk
+# "alley@normal": [255,128,255],  # roadway
+# "alley@crosswalk": [255, 0, 255],  # crosswalk
+# "alley@speed_bump": [255,128,255],  # roadway
+# "alley@damaged": [255, 0, 0],  # damaged
+# "bike_lane@normal": [0, 0, 255],  # bike_lane
+# "caution_zone@stairs": [255,192,0],  # caution_zone
+# "caution_zone@manhole": [0, 0, 0],  # background
+# "caution_zone@tree_zone": [255,192,0],  # caution_zone
+# "caution_zone@grating": [255,192,0],  # caution_zone
+# "caution_zone@repair_zone": [255,192,0],  # caution_zone
+# }
+# ###################
+
+
+# 사용할 8개의 클래스 지정 
 color_map = {
-"sidewalk@blocks": [0, 255, 0],  # sidewalk
-"sidewalk@cement": [0, 255, 0],  # sidewalk
-"sidewalk@urethane": [255, 128, 0],  # bike_lane
-"sidewalk@asphalt": [255, 128, 0],  # bike_lane
-"sidewalk@soil_stone": [0, 255, 0],  # sidewalk
-"sidewalk@damaged": [0, 255, 0],  # sidewalk
-"sidewalk@other": [0, 255, 0],  # sidewalk
-"braille_guide_blocks@normal": [255, 255, 0],  # guide_block
-"braille_guide_blocks@damaged": [255, 255, 0],  # guide_block
-"roadway@normal": [0, 0, 255],  # roadway
-"roadway@crosswalk": [255, 0, 255],  # crosswalk
-"alley@normal": [0, 0, 255],  # roadway
-"alley@crosswalk": [255, 0, 255],  # crosswalk
-"alley@speed_bump": [0, 0, 255],  # roadway
-"alley@damaged": [0, 0, 255],  # roadway
-"bike_lane@normal": [255, 128, 0],  # bike_lane
-"caution_zone@stairs": [255, 0, 0],  # caution_zone
-"caution_zone@manhole": [0, 0, 0],  # background
-"caution_zone@tree_zone": [255, 0, 0],  # caution_zone
-"caution_zone@grating": [255, 0, 0],  # caution_zone
-"caution_zone@repair_zone": [255, 0, 0],  # caution_zone
+    "background": [0,0,0], #background
+    "bike_lane": [0,0,255], #bike_lane,
+    "caution_zone": [255,192,0], #caution_zone
+    "crosswalk": [255,0,255], #crosswalk
+    "guide_block": [255,255,0], #guide_block
+    "roadway": [255,128,255], #roadway
+    "sidewalk": [0,255,0], #sidewalk
+    "damaged": [255,0,0] #damaged
 }
-###################
 
 error_logs = []
 image2path = {}
 statistics = {}
 
 def convert_to_json():
+    
     xml_files = sorted(glob(str(XML_GLOB), recursive=True))
     JSON_OUTPUT.mkdir(exist_ok=False, parents=True)
-
+    
     for i, xml in enumerate(xml_files):
         xml = Path(xml)
         out_json = JSON_OUTPUT / xml.name.replace('.xml', '.json')
@@ -126,7 +141,8 @@ def parse_polygon(polygon: dict, mask: np.array):
     else:
         attribute_text = 'normal'
 
-    cls = str(label) + '@' + str(attribute_text)
+#     cls = str(label) + '@' + str(attribute_text)
+    cls = str(label) #remasking하여 attribute 사용하지 않으므로 label만 파싱하여 클래스로 사용.
     assert cls in color_map, f"Invalid label@attribute: {cls}"
     add_count(cls)
 

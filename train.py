@@ -1,19 +1,3 @@
-import torch
-import os
-import numpy as np
-from tqdm import tqdm
-
-import settings
-from modules.dataloaders import make_data_loader
-from modules.models.sync_batchnorm.replicate import patch_replication_callback
-from modules.models.deeplab_xception import DeepLabv3_plus, get_1x_lr_params, get_10x_lr_params
-from modules.utils.loss import SegmentationLosses
-from modules.utils.calculate_weights import calculate_weigths_labels
-# from modules.utils.lr_scheduler import LR_Scheduler
-from modules.utils.saver import Saver
-from modules.utils.summaries import TensorboardSummary
-from modules.utils.metrics import Evaluator
-
 class Trainer(object):
     def __init__(self,):
         # Define Saver
@@ -60,7 +44,7 @@ class Trainer(object):
 
         # Using cuda
         if settings.cuda:
-            self.model = torch.nn.DataParallel(self.model, device_ids=settings.gpu_ids)
+            self.model = torch.nn.DataParallel(self.model, device_ids=[0])
             patch_replication_callback(self.model)
             self.model = self.model.cuda()
 

@@ -19,8 +19,9 @@ base_dir
 """
 
 ### RUN OPTIONS ###
-BASE_DIR = Path('/home/super/Projects/dataset/surface6')
-VALID_COUNT = 2000
+
+BASE_DIR = Path('/home/piai/A2 PROJECT/dataset/surface6')
+VALID_COUNT = 200 
 ###################
 
 images = sorted(glob(str(BASE_DIR/'**/*.jpg'), recursive=True))
@@ -61,3 +62,4 @@ with open(osp.join(BASE_DIR / 'valid.txt'), 'w+') as f:
     f.write('\n'.join(valid_lines))
 
 print(f'train: {len(train_lines)}, valid: {len(valid_lines)}')
+
