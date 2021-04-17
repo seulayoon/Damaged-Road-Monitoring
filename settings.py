@@ -5,8 +5,6 @@ out_stride = 8  # network output stride (default: 8)
 workers = 16
 pretrained = True  # whether to use pretrained Xception backbone
 
-# resize_height = 512  # model input shape
-# resize_width = 1024
 resize_height = 256  # model input shape
 resize_width = 512
 
@@ -22,10 +20,8 @@ freeze_bn = False  # whether to freeze bn parameters (default: False)
 
 epochs = 50
 start_epoch = 0
-# batch_size = 2 * len(gpu_ids)
-# test_batch_size = 2 * len(gpu_ids)
-batch_size = 2
-test_batch_size = 2
+batch_size = 2 * len(gpu_ids)
+test_batch_size = 2 * len(gpu_ids)
 
 loss_type = 'ce'  # 'ce': CrossEntropy, 'focal': Focal Loss
 use_balanced_weights = False  # whether to use balanced weights (default: False)
@@ -48,17 +44,8 @@ no_val = False  # skip validation during training
 
 dataset = 'surface'
 root_dir = ''
-if dataset == 'pascal':
-    use_sbd = False  # whether to use SBD dataset
-    root_dir = '/path/to/datasets/VOCdevkit/VOC2012/'  # folder that contains VOCdevkit/.
-elif dataset == 'sbd':
-    root_dir = '/path/to/datasets/benchmark_RELEASE/'  # folder that contains dataset/.
-elif dataset == 'cityscapes':
-    root_dir = '/path/to/datasets/cityscapes/'  # foler that contains leftImg8bit/
-elif dataset == 'coco':
-    root_dir = '/home/piai/A2 PROJECT/coco/'
-elif dataset == 'surface':
-    root_dir = '/home/piai/A2 PROJECT/dataset/surface6' # 경로 설정 (dataset=='surface'만 사용)
+if dataset == 'surface':
+    root_dir = '/home/piai/A2 PROJECT/dataset/surface6'
 else:
     print('Dataset {} not available.'.format(dataset))
     raise NotImplementedError
