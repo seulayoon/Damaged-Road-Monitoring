@@ -1,10 +1,18 @@
 # 자율주행차를 이용한 파손 도보 모니터링 시스템 
 by @seulayoon
 
-- 코드 수정 및 추가
-- 데이터 Re-masking하여 사용 (원본 데이터셋: AI hub 제공)
-- classes 축소
-- 아직 정리 중 ...
+Object Detection과 Semantic Segmentation을 이용한 [자율주행차를 이용한 파손 도보 모니터링 시스템] 팀 프로젝트로,
+RC카에 자율주행기술을 적용하여 도보 위를 운행하며, RC카에 장착한 카메라 및 웹캠으로 도보를 모니터링하여 파손 부분을 인식하면 관리자에게 알려주는 프로그램입니다.
+
+기존의 오픈 소스를 커스터마이징하여 사용하였습니다.
+
+## 수정사항
+- 파일 경로 수정
+- 이미지 사이즈, Hyperparameter 조정
+- 사용하지 않는 classes 삭제 및 "damaged" class 추가
+- 테스트 환경에 맞게 직접 이미지 데이터 수집 후 Re-masking하여 데이터셋 구축
+    - 원본 데이터셋: Surface Masking (https://aihub.or.kr/aidata/136)
+    - Re-masked 데이터 xml 어노테이션 후 Parsing 코드 추가 (@contributor: 정혜원)
 ___
 
 
